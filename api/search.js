@@ -1,3 +1,4 @@
+
 const BBY_KEY = "Jcg15GTrGHSj12qiuzGpGTNl";
 
 export default async function handler(req, res) {
@@ -10,13 +11,11 @@ export default async function handler(req, res) {
   if (!zip || !sku) return res.status(400).json({ error: "zip and sku required" });
 
   try {
-    // Fetch stores first, then availability with a small delay to avoid rate limiting
     const storesRes = await fetch(
       `https://api.bestbuy.com/v1/stores(area(${zip},${radius}))?show=storeId,name,city,region,address,distance,hours,phone&pageSize=15&apiKey=${BBY_KEY}&format=json`
     );
     const stores = await storesRes.json();
 
-    // 600ms delay to respect the per-second rate limit
     await new Promise(r => setTimeout(r, 600));
 
     const availRes = await fetch(
